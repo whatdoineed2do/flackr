@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+
+    <script type='text/javascript' src="/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/justifiedGallery.min.css"/>
+    <script type='text/javascript' src="/js/jquery.justifiedGallery.min.js"></script>
+
+    <link rel="stylesheet" href="/css/flackr.css"/>
+
+    <script>
+      var album_ttl = -1;
+    </script>
+
+    <style>
+      img {
+        object-fit: cover;
+        width: 150px;
+        height: 150px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <a href="/flickr" class="logo">flackr</a>
+      <div class="header-right">
+        <a class="active" href="#" onclick="addimages(5);return false;" id="total">loading...</a>
+        <a id="loaded"></a>
+      </div>
+    </div> 
+
+    <div class="content" style="margin: 10px; padding: 20px;">
+      <a id="albums">placeholder</a>
+
+      <script type="text/javascript">
+        function adddirs() {
+  console.log("calling");
+          // this call needs to be sync!!!
+          $.ajax({
+            url: "/cgi-bin/flickr-dirs.sh",
+            data: { where: location.pathname },
+            type: "GET",
+            async: false,
+            success: function(resp){
+              var data = resp;
+  console.log("resp: count=" + data.count + " ttl=" + data.total_imgs);
+              $("#albums").text('');
+              for (var i=0; i<data.albums.length; i++) {
+                var obj = data.albums[i];
+                $("#albums").append('<a href="' + obj.path + '" target="_blank"><img src="' + obj.thumbpath + '"/>' + obj.name + '</a>');
+              }
+              if (album_ttl < 0) {
+                album_ttl = data.count
+              }
+              $("#total").text(album_ttl + ' albums');
+            }
+          });
+        }
+
+        adddirs();
+    </script>
+  </div>
+  </body>
+</html>

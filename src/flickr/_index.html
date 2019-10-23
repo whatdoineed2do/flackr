@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+
+    <script type='text/javascript' src="/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/justifiedGallery.min.css"/>
+    <script type='text/javascript' src="/js/jquery.justifiedGallery.min.js"></script>
+
+    <link rel="stylesheet" href="/css/flackr.css"/>
+
+    <script>
+      var imgs_ttl = -1;
+      var imgs_loaded  = 0;
+    </script>
+  </head>
+
+  <body>
+    <div class="header">
+      <a href="/flickr" class="logo">flackr</a>
+      <div class="header-right">
+        <a class="active" href="#" onclick="addimages(5);return false;" id="total">loading...</a>
+        <a id="loaded"></a>
+      </div>
+    </div> 
+
+    <div class="content">
+      <div id="images" class="justified-gallery">
+      </div>
+
+      <script type="text/javascript">
+        function addimages(limit) {
+  console.log("calling");
+          // this call needs to be sync!!!
+          $.ajax({
+            url: "/cgi-bin/flickr-imgs.sh",
+            data: { where: location.pathname, offset: imgs_loaded, count: limit },
+            type: "GET",
+            async: false,
+            success: function(resp){
+              var data = resp;
+  console.log("resp: offset=" + data.offset + " count=" + data.count + " ttl=" + data.total);
+              for (var i=0; i<data.images.length; i++) {
+                var obj = data.images[i];
+                $("#images").append('<a href="' + obj.path + '" target="_blank"><img src="' + obj.thumbpath + '"/></a>');
+              }
+              $("#images").justifiedGallery('norewind');
+              if (imgs_ttl < 0) {
+                imgs_ttl = data.total
+              }
+              imgs_loaded += data.images.length;
+              if (imgs_loaded == imgs_ttl) {
+                $("#total").text(imgs_ttl + ' images');
+                $("#total").removeAttr("onclick").removeAttr("href");
+              }
+              else {
+                $("#total").text(imgs_loaded + '/' + imgs_ttl);
+              }
+            }
+          });
+        }
+
+        $("#images").justifiedGallery({
+          rowHeight : 200,
+          lastRow : 'nojustify',
+          margins: 5,
+          border: 20
+        });
+
+        var  $gallery = $('#images');
+        function checkGalleryBottom() {
+          var  controller = $gallery.data('jg.controller');
+          var  settings = controller.settings;
+          if ( (imgs_ttl < 0 || imgs_loaded < imgs_ttl) && $gallery.offset().top + $gallery.height() - settings.rowHeight <= $(window).scrollTop() + $(window).height()) {
+            addimages(10);
+          }
+        }
+        $(window).scroll(checkGalleryBottom);
+        $gallery.justifiedGallery().on('jg.ccomplete jg.resize', checkGalleryBottom);
+        checkGalleryBottom();
+    </script>
+  </div>
+  </body>
+</html>
