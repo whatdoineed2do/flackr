@@ -11,6 +11,10 @@ html * {
   margin: 0;
 }
 
+html, body {
+  height: 100%;
+}
+
 .header {
   overflow: hidden;
   background-color: black;
@@ -51,5 +55,6 @@ html * {
 }
 
 .content {
+  height: 100%;
   background-color: rgb(245, 245, 245);
 }
