@@ -17,8 +17,26 @@
     <style>
       img {
         object-fit: cover;
+        border-radius: 5px;
         width: 150px;
         height: 150px;
+      }
+
+      .container {
+        flex-direction: column;
+        flex-flow: row;
+        display: flex;
+      }
+      .column {
+        flex: 1;
+      }
+      .row {
+        flex-wrap: wrap;
+        display: flex;
+      }
+      .card {
+        padding: 10px;
+        background-color: white;
       }
     </style>
   </head>
@@ -27,17 +45,18 @@
     <div class="header">
       <a href="/flickr" class="logo">flackr</a>
       <div class="header-right">
-        <a class="active" href="#" onclick="addimages(5);return false;" id="total">loading...</a>
+        <a class="active" id="total">loading...</a>
         <a id="loaded"></a>
       </div>
     </div> 
 
     <div class="content" style="margin: 10px; padding: 20px;">
+      <div class="container">
+      <div class="row">
       <a id="albums">placeholder</a>
 
       <script type="text/javascript">
-        function adddirs() {
-  console.log("calling");
+        function fetchalbums() {
           // this call needs to be sync!!!
           $.ajax({
             url: "/cgi-bin/flickr-dirs.sh",
@@ -50,7 +69,24 @@
               $("#albums").text('');
               for (var i=0; i<data.albums.length; i++) {
                 var obj = data.albums[i];
-                $("#albums").append('<a href="' + obj.path + '" target="_blank"><img src="' + obj.thumbpath + '"/>' + obj.name + '</a>');
+                $("#albums").append(
+'<div class="card">' +
+' <div class="column">' +
+'  <a href="' + obj.path + '">' +
+'  <div class="row">' +
+'   <div class="card-cover">' +
+'    <img src="' + obj.thumbpath + '"/>' +
+'   </div>' +
+'  </div>' +
+'  <div class="row">' +
+'   <div class="card-meta">' +
+'    <h2>' + obj.name + '</h2>' +
+'    <a>' + obj.total + ' images</a>' +
+'   </div>' +
+'  </div>' +
+'  </a>'+
+' </div>' +
+'</div>');
               }
               if (album_ttl < 0) {
                 album_ttl = data.count
@@ -60,8 +96,11 @@
           });
         }
 
-        adddirs();
+        fetchalbums();
     </script>
+      </div>
+    </div>
+    </div>
   </div>
   </body>
 </html>
