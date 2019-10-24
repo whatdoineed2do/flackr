@@ -15,28 +15,31 @@
     </script>
 
     <style>
-      img {
+      a {
+        text-decoration: none;
+      }
+      .cards {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: stretch;
+      }
+      .card {
+        flex: 1 0 150px;
+        margin: 16px;
+      }
+      .card img {
+        max-width: 100%;
         object-fit: cover;
-        border-radius: 5px;
+        border-radius: 3px;
         width: 150px;
         height: 150px;
       }
-
-      .container {
-        flex-direction: column;
-        flex-flow: row;
-        display: flex;
+      .card .text {
+        padding: 0 10px 5px;
       }
-      .column {
-        flex: 1;
-      }
-      .row {
-        flex-wrap: wrap;
-        display: flex;
-      }
-      .card {
-        padding: 10px;
-        background-color: white;
+      .card .text .info {
+        color: lightgrey;
       }
     </style>
   </head>
@@ -51,9 +54,7 @@
     </div> 
 
     <div class="content" style="margin: 10px; padding: 20px;">
-      <div class="container">
-      <div class="row">
-      <a id="albums">placeholder</a>
+      <main class="cards" id="albums">placeholder
 
       <script type="text/javascript">
         function fetchalbums() {
@@ -65,28 +66,19 @@
             async: false,
             success: function(resp){
               var data = resp;
-  console.log("resp: count=" + data.count + " ttl=" + data.total_imgs);
-              $("#albums").text('');
+              $("#albums").html('');
               for (var i=0; i<data.albums.length; i++) {
                 var obj = data.albums[i];
                 $("#albums").append(
-'<div class="card">' +
-' <div class="column">' +
-'  <a href="' + obj.path + '">' +
-'  <div class="row">' +
-'   <div class="card-cover">' +
-'    <img src="' + obj.thumbpath + '"/>' +
-'   </div>' +
-'  </div>' +
-'  <div class="row">' +
-'   <div class="card-meta">' +
+'<article class="card">' +
+' <a href="' + obj.path + '">' +
+'  <img src="' + obj.thumbpath + '"/>' +
+'  <div class="text">' +
 '    <h2>' + obj.name + '</h2>' +
-'    <a>' + obj.total + ' images</a>' +
-'   </div>' +
+'    <p>' + obj.total + ' images</p>' +
 '  </div>' +
-'  </a>'+
-' </div>' +
-'</div>');
+' </a>'+
+'</article>');
               }
               if (album_ttl < 0) {
                 album_ttl = data.count
@@ -98,9 +90,7 @@
 
         fetchalbums();
     </script>
-      </div>
+      </main>
     </div>
-    </div>
-  </div>
   </body>
 </html>
