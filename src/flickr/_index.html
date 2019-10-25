@@ -31,7 +31,6 @@
 
       <script type="text/javascript">
         function addimages(limit) {
-  console.log("calling");
           // this call needs to be sync!!!
           $.ajax({
             url: "/cgi-bin/flickr-imgs.sh",
@@ -40,7 +39,6 @@
             async: false,
             success: function(resp){
               var data = resp;
-  console.log("resp: offset=" + data.offset + " count=" + data.count + " ttl=" + data.total);
               for (var i=0; i<data.images.length; i++) {
                 var obj = data.images[i];
                 $("#images").append('<a href="' + obj.path + '" target="_blank"><img src="' + obj.thumbpath + '"/></a>');
@@ -77,7 +75,7 @@
           }
         }
         $(window).scroll(checkGalleryBottom);
-        $gallery.justifiedGallery().on('jg.ccomplete jg.resize', checkGalleryBottom);
+        $gallery.justifiedGallery().on('jg.complete jg.resize', checkGalleryBottom);
         checkGalleryBottom();
     </script>
   </div>
