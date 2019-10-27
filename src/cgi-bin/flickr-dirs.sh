@@ -4,7 +4,7 @@ echo
 echo
 
 urldecode() {
-    echo $1 | sed -e 's/%21/!/g' -e 's/%23/#/g' -e 's/%24/$/g' -e 's/%26/\&/g' -e "s/%27/'/g" -e 's/%28/(/g' -e 's/%29/)/g' -e 's#%2F#/#g'
+    echo $1 | sed -e 's/%21/!/g' -e 's/%23/#/g' -e 's/%24/$/g' -e 's/%26/\&/g' -e "s/%27/'/g" -e 's/%28/(/g' -e 's/%29/)/g' -e 's#%2F#/#g' -e 's/%2520/ /g'
 }
 
 saveIFS=$IFS
@@ -15,7 +15,7 @@ IFS=$saveIFS
 declare -A params
 for ((i=0; i<${#tmp[@]}; i+=2))
 do
-    params[${tmp[i]}]=$(urldecode ${tmp[i+1]})
+    params[${tmp[i]}]=$(urldecode "${tmp[i+1]}")
 done
 
 BASE=${params["where"]}
@@ -29,7 +29,7 @@ IMGDIR=/var/www/html
 if [ ! -d $IMGDIR ]; then
   IMGDIR=/var/www/lighttpd
 fi
-dirs=(${IMGDIR}$(dirname ${BASE})/*)
+dirs=("${IMGDIR}$(dirname "${BASE}")"/*)
 N=${#dirs[@]}
 
 #echo "$(date)" > /tmp/fr

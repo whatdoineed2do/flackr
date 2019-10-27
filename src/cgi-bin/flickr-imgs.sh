@@ -4,7 +4,7 @@ echo
 echo
 
 urldecode() {
-    echo $1 | sed -e 's/%21/!/g' -e 's/%23/#/g' -e 's/%24/$/g' -e 's/%26/\&/g' -e "s/%27/'/g" -e 's/%28/(/g' -e 's/%29/)/g' -e 's#%2F#/#g'
+    echo $1 | sed -e 's/%21/!/g' -e 's/%23/#/g' -e 's/%24/$/g' -e 's/%26/\&/g' -e "s/%27/'/g" -e 's/%28/(/g' -e 's/%29/)/g' -e 's#%2F#/#g' -e 's/%2520/ /g'
 }
 
 saveIFS=$IFS
@@ -15,7 +15,7 @@ IFS=$saveIFS
 declare -A params
 for ((i=0; i<${#tmp[@]}; i+=2))
 do
-    params[${tmp[i]}]=$(urldecode ${tmp[i+1]})
+    params[${tmp[i]}]=$(urldecode "${tmp[i+1]}")
 done
 
 BASE=${params["where"]}
@@ -30,7 +30,7 @@ IMGDIR=/var/www/html
 if [ ! -d $IMGDIR ]; then
   IMGDIR=/var/www/lighttpd
 fi
-files=(${IMGDIR}$(dirname ${BASE})/*.jpg)
+files=("${IMGDIR}$(dirname "${BASE}")"/*.jpg)
 N=${#files[@]}
 
 OFFSET=${params["offset"]}
@@ -54,7 +54,7 @@ for ((i=$OFFSET; i<$M; i++)); do
     if [ $i -gt $OFFSET ];  then
       echo -n ","
     fi
-    IMG=$(echo ${files[$i]} | sed -e "s#^/var/www/lighttpd##" -e"s#^/var/www/html##")
-    echo -n "{ \"path\": \"${IMG}\", \"thumbpath\": \"$(dirname $IMG)/.tn/$(basename $IMG)\" }"
+    IMG=$(echo "${files[$i]}" | sed -e "s#^/var/www/lighttpd##" -e"s#^/var/www/html##")
+    echo -n "{ \"path\": \"${IMG}\", \"thumbpath\": \"$(dirname "$IMG")/.tn/$(basename "$IMG")\" }"
 done
 echo "  ], \"offset\": $OFFSET, \"count\": $COUNT, \"total\": $N }"
