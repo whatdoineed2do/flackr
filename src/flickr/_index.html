@@ -14,6 +14,8 @@
     <script>
       var imgs_ttl = -1;
       var imgs_loaded  = 0;
+      var page = 1;
+      var page_limit = 27;
     </script>
   </head>
 
@@ -31,7 +33,29 @@
       </div>
 
       <script type="text/javascript">
-        function addimages(limit) {
+        function addimages(limit)
+        {
+          var imgs_loaded_page = imgs_loaded % page_limit;
+
+          if (imgs_loaded_page + limit > page_limit) {
+            limit = page_limit - imgs_loaded_page;
+          }
+          if (imgs_loaded_page == 0 && imgs_loaded > 0) {
+            // new page
+            $("#images").justifiedGallery("destroy")
+            $("#images").html("");
+            $("#images").justifiedGallery({
+              rowHeight : 200,
+              lastRow : 'nojustify',
+              margins: 5,
+              border: 20
+            });
+          }
+
+console.log("imgs_loaded=" + imgs_loaded + " limit=" + limit + "  imgs_loaded_page =" + imgs_loaded_page + "  page limit=" + page_limit);
+
+console.log("calling offset=" + imgs_loaded + "  limit=" + limit);
+
           // this call needs to be sync!!!
           $.ajax({
             url: "/cgi-bin/flickr-imgs.sh",
@@ -71,7 +95,7 @@
         function checkGalleryBottom() {
           var  controller = $gallery.data('jg.controller');
           var  settings = controller.settings;
-          if ( (imgs_ttl < 0 || imgs_loaded < imgs_ttl) && $gallery.offset().top + $gallery.height() - settings.rowHeight <= $(window).scrollTop() + $(window).height()) {
+          if ( (imgs_ttl < 0 || imgs_loaded < page_limit) && $gallery.offset().top + $gallery.height() - settings.rowHeight <= $(window).scrollTop() + $(window).height()) {
             addimages(10);
           }
         }
