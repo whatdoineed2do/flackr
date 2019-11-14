@@ -4,9 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1" />
 
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
     <script type='text/javascript' src="/js/jquery.min.js"></script>
+    <script type='text/javascript' src="/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/css/justifiedGallery.min.css"/>
     <script type='text/javascript' src="/js/jquery.justifiedGallery.min.js"></script>
+    <script type='text/javascript' src="/js/jquery.twbsPagination.min.js"></script>
     <link rel="icon" href="/flickr/favicon.ico">
 
     <link rel="stylesheet" href="/css/flackr.css"/>
@@ -33,8 +36,7 @@
       </div>
 
       <script type="text/javascript">
-        function addimages(limit)
-        {
+        function addimages(limit) {
           var imgs_loaded_page = imgs_loaded % page_limit;
 
           if (imgs_loaded_page + limit > page_limit) {
