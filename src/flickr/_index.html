@@ -18,7 +18,9 @@
       var imgs_ttl = -1;
       var imgs_loaded  = 0;
       var page = 1;
-      var page_limit = 27;
+      var page_limit = 200;
+      var page_done = false;
+      var paginit = false;
     </script>
   </head>
 
@@ -36,6 +38,18 @@
       </div>
 
       <script type="text/javascript">
+        function reinit() {
+          // new page
+          $("#images").justifiedGallery("destroy")
+          $("#images").html("");
+          $("#images").justifiedGallery({
+            rowHeight : 200,
+            lastRow : 'nojustify',
+            margins: 5,
+            border: 20
+          });
+        }
+
         function addimages(limit) {
           var imgs_loaded_page = imgs_loaded % page_limit;
 
@@ -43,20 +57,14 @@
             limit = page_limit - imgs_loaded_page;
           }
           if (imgs_loaded_page == 0 && imgs_loaded > 0) {
-            // new page
-            $("#images").justifiedGallery("destroy")
-            $("#images").html("");
-            $("#images").justifiedGallery({
-              rowHeight : 200,
-              lastRow : 'nojustify',
-              margins: 5,
-              border: 20
-            });
+            reinit();
           }
 
+/*
 console.log("imgs_loaded=" + imgs_loaded + " limit=" + limit + "  imgs_loaded_page =" + imgs_loaded_page + "  page limit=" + page_limit);
 
 console.log("calling offset=" + imgs_loaded + "  limit=" + limit);
+*/
 
           // this call needs to be sync!!!
           $.ajax({
@@ -65,6 +73,11 @@ console.log("calling offset=" + imgs_loaded + "  limit=" + limit);
             type: "GET",
             async: false,
             success: function(resp){
+              if (imgs_loaded > 0 && imgs_loaded%page_limit == 0) {
+                page_done = false;
+                paginit = false;
+                $("#pagnation").html("");
+              }
               var data = resp;
               for (var i=0; i<data.images.length; i++) {
                 var obj = data.images[i];
@@ -81,6 +94,9 @@ console.log("calling offset=" + imgs_loaded + "  limit=" + limit);
               }
               else {
                 $("#total").text(imgs_loaded + '/' + imgs_ttl);
+                if ((imgs_loaded == 0 && imgs_loaded == page_limit) || (imgs_loaded > 0 && imgs_loaded%page_limit == 0)) {
+                  page_done = true;
+                }
               }
             }
           });
@@ -97,14 +113,35 @@ console.log("calling offset=" + imgs_loaded + "  limit=" + limit);
         function checkGalleryBottom() {
           var  controller = $gallery.data('jg.controller');
           var  settings = controller.settings;
-          if ( (imgs_ttl < 0 || imgs_loaded < page_limit) && $gallery.offset().top + $gallery.height() - settings.rowHeight <= $(window).scrollTop() + $(window).height()) {
+          if ( (imgs_ttl < 0 || imgs_loaded < page*page_limit) && $gallery.offset().top + $gallery.height() - settings.rowHeight <= $(window).scrollTop() + $(window).height()) {
             addimages(10);
+          }
+          if (page_done && !paginit) {
+            paginit = true;
+            window.pagObj = $('#pagination').twbsPagination({
+              totalPages: Math.ceil(imgs_ttl / page_limit),
+              visiblePages: 7
+/*
+              onPageClick: function (event, page) {
+                console.log(page + ' of ' + Math.ceil(imgs_ttl / page_limit) + ' (from options)');
+              }
+*/
+            }).on('page', function (event, req_page) {
+              reinit();
+              imgs_loaded = (req_page-1)*page_limit;
+              page = req_page;
+              addimages(10);
+            });
           }
         }
         $(window).scroll(checkGalleryBottom);
         $gallery.justifiedGallery().on('jg.complete jg.resize', checkGalleryBottom);
         checkGalleryBottom();
     </script>
+
+    <div class="container"><div class="row justify-content-md-center"><div class="col-mmd-auto">
+    <ul class="pagination" id="pagination"></ul>
+    </div> </div> </div>
   </div>
   </body>
 </html>
