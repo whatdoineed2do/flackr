@@ -54,7 +54,12 @@ for ((i=$OFFSET; i<$M; i++)); do
     if [ $i -gt $OFFSET ];  then
       echo -n ","
     fi
+    RATING=$(exiv2 -K Xmp.xmp.Rating -Pv "${files[$i]}")
+    if [ -z ${RATING} ]; then
+      RATING=0
+    fi
+    RATING_JSON=", \"rating\": ${RATING}"
     IMG=$(echo "${files[$i]}" | sed -e "s#^/var/www/lighttpd##" -e"s#^/var/www/html##")
-    echo -n "{ \"path\": \"${IMG}\", \"thumbpath\": \"$(dirname "$IMG")/.tn/$(basename "$IMG")\" }"
+    echo -n "{ \"path\": \"${IMG}\", \"thumbpath\": \"$(dirname "$IMG")/.tn/$(basename "$IMG")\"${RATING_JSON}}"
 done
 echo "  ], \"offset\": $OFFSET, \"count\": $COUNT, \"total\": $N }"
