@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width initial-scale=1" />
 
     <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <!-- link rel="stylesheet" href="/css/font-awesome.min.css"/ -->
+     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
+
     <script type='text/javascript' src="/js/jquery.min.js"></script>
     <script type='text/javascript' src="/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/css/justifiedGallery.min.css"/>
+    <link rel="stylesheet" href="/css/starrr.css"/>
     <script type='text/javascript' src="/js/jquery.justifiedGallery.min.js"></script>
     <script type='text/javascript' src="/js/jquery.twbsPagination.min.js"></script>
+    <script type='text/javascript' src="/js/starrr.js"></script>
     <link rel="icon" href="/flickr/favicon.ico">
 
     <link rel="stylesheet" href="/css/flackr.css"/>
@@ -21,13 +26,25 @@
       var page_limit = 200;
       var page_done = false;
       var paginit = false;
+      var rating = 0;
     </script>
+<style>
+.justified-gallery > .jg-faded {
+  opacity: 0.3;
+  transition: opacity 1s ease;
+}
+.justified-gallery > .jg-unfaded {
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+</style>
   </head>
 
   <body>
     <div class="header">
       <a href="/flickr" class="logo">flackr</a>
       <div class="header-right">
+        <a class='starrr' id='rating'></a>
         <a class="active" href="#" onclick="addimages(10);return false;" id="total">loading...</a>
         <a id="loaded"></a>
       </div>
@@ -81,7 +98,7 @@ console.log("calling offset=" + imgs_loaded + "  limit=" + limit);
               var data = resp;
               for (var i=0; i<data.images.length; i++) {
                 var obj = data.images[i];
-                $("#images").append('<a href="' + obj.path + '" target="_blank"><img src="' + obj.thumbpath + '"/></a>');
+                $("#images").append('<a class="img-item' + (obj.rating < rating ? ' jg-faded' : '') + '" rating=' + obj.rating + ' href="' + obj.path + '" target="_blank"><img src="' + obj.thumbpath + '"/></a>');
               }
               $("#images").justifiedGallery('norewind');
               if (imgs_ttl < 0) {
@@ -137,6 +154,41 @@ console.log("calling offset=" + imgs_loaded + "  limit=" + limit);
         $(window).scroll(checkGalleryBottom);
         $gallery.justifiedGallery().on('jg.complete jg.resize', checkGalleryBottom);
         checkGalleryBottom();
+
+        $('#rating').starrr({
+          max: 5,
+          change: function(e, value){
+            if (value) {
+              rating = value;
+              switch (rating) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                  $('.img-item').each(function(){
+                    var  item_rating = $(this).attr("rating");
+                    if (item_rating < rating) {
+                      $(this).removeClass("jg-unfaded");
+                      $(this).addClass("jg-faded");
+                    }
+                    else {
+                      $(this).removeClass("jg-faded");
+                      $(this).addClass("jg-unfaded");
+                    }
+                  });
+                  break;
+              }
+            }
+            else {
+              rating = 0;
+              $('.img-item').each(function(){
+                $(this).addClass("jg-unfaded");
+                $(this).removeClass("jg-faded");
+              });
+            }
+          }
+        });
     </script>
 
     <div class="container"><div class="row justify-content-md-center"><div class="col-mmd-auto">
