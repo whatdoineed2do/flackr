@@ -28,7 +28,7 @@
     <div class="header">
       <a href="/flickr" class="logo">flackr</a>
       <div class="header-right">
-        <a class="active" href="#" onclick="addimages(5);return false;" id="total">loading...</a>
+        <a class="active" href="#" onclick="addimages(10);return false;" id="total">loading...</a>
         <a id="loaded"></a>
       </div>
     </div> 
@@ -114,13 +114,13 @@ console.log("calling offset=" + imgs_loaded + "  limit=" + limit);
           var  controller = $gallery.data('jg.controller');
           var  settings = controller.settings;
           if ( (imgs_ttl < 0 || imgs_loaded < imgs_ttl && imgs_loaded < page*page_limit) && $gallery.offset().top + $gallery.height() - settings.rowHeight <= $(window).scrollTop() + $(window).height()) {
-            addimages(10);
+            addimages(20);
           }
           if (page_done && !paginit) {
             paginit = true;
             window.pagObj = $('#pagination').twbsPagination({
               totalPages: Math.ceil(imgs_ttl / page_limit),
-              visiblePages: 7
+              visiblePages: 5
 /*
               onPageClick: function (event, page) {
                 console.log(page + ' of ' + Math.ceil(imgs_ttl / page_limit) + ' (from options)');
