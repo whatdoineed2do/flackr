@@ -24,7 +24,7 @@ for i in "$@"; do
     fi
     rsync -vauht "${SRC}${i}"/*.{jpg,png} "$DEST"
     for j in "$DEST"/*.{jpg,png}; do
-	convert -resize 300 -quality 50 "$j" "${DEST}"/.tn/$(basename "$j")
+	convert -resize 300 -quality 50 "$j" "${DEST}/.tn/$(basename "$j")"
     done
     cd "${DEST}" && ln -s ../_index.html index.html && cd -
 done
