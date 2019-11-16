@@ -113,7 +113,7 @@ console.log("calling offset=" + imgs_loaded + "  limit=" + limit);
         function checkGalleryBottom() {
           var  controller = $gallery.data('jg.controller');
           var  settings = controller.settings;
-          if ( (imgs_ttl < 0 || imgs_loaded < page*page_limit) && $gallery.offset().top + $gallery.height() - settings.rowHeight <= $(window).scrollTop() + $(window).height()) {
+          if ( (imgs_ttl < 0 || imgs_loaded < imgs_ttl && imgs_loaded < page*page_limit) && $gallery.offset().top + $gallery.height() - settings.rowHeight <= $(window).scrollTop() + $(window).height()) {
             addimages(10);
           }
           if (page_done && !paginit) {
